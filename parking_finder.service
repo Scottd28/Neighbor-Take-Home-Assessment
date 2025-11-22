@@ -1,0 +1,19 @@
+[Unit]
+Description=FastAPI Parking Finder Service
+After=network.target
+
+[Service]
+# User and Group that owns the process (e.g., your login user)
+User=scottdsg
+Group=www-data
+# The directory where your main.py and listings.json reside
+WorkingDirectory=/path/to/your/project
+# Replace with the path to your virtual environment's Python executable
+ExecStart=/path/to/your/venv/bin/gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+Restart=always
+# Standard output/error logs
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
