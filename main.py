@@ -17,6 +17,7 @@ DATA_PATH = "listings.json"
 if not os.path.exists(DATA_PATH):
     raise FileNotFoundError("listings.json not found in project root")
 
+#GET THE LISTINGS
 with open(DATA_PATH, "r") as f:
     LISTINGS = json.load(f)
 
@@ -52,11 +53,16 @@ def find_locations(vehicles: List[VehicleRequest]):
 
     #figures out what locations can fit all vehicles
     '''
+    SPOTS
     location_id = the parking location
     spot[0] = spot in the parking location
     spot[1] = length
     spot[2] = width
     spot[3] = price_in_cents
+    
+    VEHICLES
+    vehicles[0] = length
+    vehicles[1] = width
     '''
     for location_id, list_of_spots in parking_locations.items(): #for each location and its  list of values per spot
         list_of_spots = sorted(list_of_spots, key=lambda x: x[3])  # get the cheapest spots first
@@ -64,11 +70,12 @@ def find_locations(vehicles: List[VehicleRequest]):
         price_location = 0
         chosen_spots = []
         for vehicle in list_of_vehicles:
-            for spot in list_of_spots:
-                if spot[0] not in chosen_spots and spot[1] >= vehicle[1] and spot[2] >= vehicle[2]:
+            for index, spot in enumerate(list_of_spots):
+                if spot[1] >= vehicle[0] and spot[2] >= vehicle[1]: #if the vehicle fits in the parking spot
                     succesful_locations += 1
                     price_location += spot[3]
-                    chosen_spots.append(spot[0])
+                    parked_spot = list_of_spots.pop(index)
+                    chosen_spots.append(parked_spot[0])
                     break
 
 
