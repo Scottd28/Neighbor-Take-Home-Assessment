@@ -5,7 +5,7 @@ import json
 import os
 
 app = FastAPI()
-#CLASS THAT CONTAINS THE VEHICLES OF THE REQUEST
+#CLASS THAT CONTAINS THE VEHICLES OF THE REQUEST (USES PEDANTIC)
 class VehicleRequest(BaseModel):
     length: int
     quantity: int
