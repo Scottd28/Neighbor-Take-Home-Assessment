@@ -5,7 +5,7 @@ import json
 import os
 
 app = FastAPI()
-#CLASS THAT CONTAINS THE VEHICLES OF THE REQUEST (USES PEDANTIC)
+
 class VehicleRequest(BaseModel):
     length: int
     quantity: int
@@ -15,7 +15,7 @@ parking_locations = {}
 DATA_PATH = "listings.json"
 
 if not os.path.exists(DATA_PATH):
-    raise FileNotFoundError("listings.json not found in project root")
+    raise FileNotFoundError( f"{DATA_PATH} not found in project root")
 
 #GET THE LISTINGS
 with open(DATA_PATH, "r") as f:
@@ -24,31 +24,26 @@ with open(DATA_PATH, "r") as f:
 #create a Dictionary that has all the parking locations and that contains all parking spots per location
 for spot in LISTINGS:
     location_id = spot["location_id"]
-    if location_id in parking_locations.keys(): # if we already have that parking spot in our dictionary
+    if location_id in parking_locations: # if we already have that parking spot in our dictionary
         parking_locations[location_id].append((spot["id"], spot["length"], spot["width"], spot["price_in_cents"]))
     else:
         parking_locations[location_id] = [[spot["id"], spot["length"], spot["width"], spot["price_in_cents"]]]
 
 # POST endpoint
 
-@app.post("/")
+@app.post("/") # it associated the find_locations function to the server so everytime someone makes a request to the server it calls the function
 
 def find_locations(vehicles: List[VehicleRequest]):
-    """
-    List[Vehicle Request] is the users vehicles that they need to find parking spots for
-    This function will eventually:
-    - process the vehicle request
-    - find all locations that can store them
-    - compute cheapest combinations
-    - return sorted results
-    """
-
+    '''
+    :param vehicles:
+    :return: list of JSON Objects that can fit all vehicles ir order from cheapest to most expensive
+    '''
     #update vehicles so you can have a list of all vehicles
     list_of_vehicles = []
     final_locations= []
     for vehicle in vehicles:
         for _ in range(vehicle.quantity):
-            list_of_vehicles.append((vehicle.length, 10)) # add all teh vehicle height ad width
+            list_of_vehicles.append((vehicle.length, 10)) # add all the vehicle height and width
 
 
     #figures out what locations can fit all vehicles
@@ -80,7 +75,7 @@ def find_locations(vehicles: List[VehicleRequest]):
 
 
 
-        if(succesful_locations == len(list_of_vehicles)): #if all cars where parked succesfully
+        if(succesful_locations == len(list_of_vehicles)): #if all cars where parked successfully
             final_locations.append({  "location_id": location_id,
             "listing_ids": chosen_spots,
             "total_price_in_cents": price_location})
